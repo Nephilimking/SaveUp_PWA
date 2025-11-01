@@ -1,0 +1,71 @@
+/* -------------------------------------------
+   GLOBAL & ANIMATION STYLES
+   Tailwind is primary, this handles polish.
+------------------------------------------- */
+
+/* Smooth background transitions for any state change */
+body {
+    transition: background-color 0.3s ease;
+    font-family: "Inter", sans-serif; /* Recommended modern font */
+}
+
+/* Ensure the progress bar animates smoothly when saving */
+#progressBar {
+    transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth easing for growth */
+}
+
+/* Add a hover/active effect for the Quick Add buttons */
+.quick-add-btn {
+    transition: transform 0.1s ease-out, background-color 0.2s ease;
+    /* Use a dark shade of gray background */
+    background-color: #374151; 
+}
+
+.quick-add-btn:hover {
+    background-color: #4b5563;
+}
+
+.quick-add-btn:active {
+    transform: scale(0.95); /* Shrinks slightly for feedback */
+}
+
+
+/* -------------------------------------------
+   CUSTOM ANIMATIONS
+   Used for new contributions appearing in the list.
+------------------------------------------- */
+
+@keyframes fadeInMove {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.contribution-item {
+    animation: fadeInMove 0.4s ease-out;
+}
+
+
+/* -------------------------------------------
+   DARK MODE / TAILWIND OVERRIDES
+   Ensures custom components look good.
+------------------------------------------- */
+
+/* The base text color for the light text against the dark theme */
+.text-gray-100 {
+    color: #f3f4f6;
+}
+
+/* Custom coloring for the feather icons based on method */
+.text-growth-green {
+    color: #00A86B !important; /* Forces the primary accent color */
+}
+
+.text-gray-400 {
+    color: #9ca3af;
+}
