@@ -3,6 +3,7 @@
   "short_name": "SaveUp",
   "description": "Stop the leak. Get your savings date back.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#111827",
   "theme_color": "#00A86B",
