@@ -43,7 +43,7 @@ function registerServiceWorker() {
         });
     }
 }
-// --- END PWA Registration ---
+// --- END PWA Service Worker Registration ---
 
 // Initialize the app
 function init() {
@@ -62,6 +62,10 @@ function loadData() {
         const savedData = localStorage.getItem('saveupSavings');
         if (savedData) {
             savingsGoal = JSON.parse(savedData);
+            // Ensure numbers are loaded correctly
+            savingsGoal.targetAmount = parseFloat(savingsGoal.targetAmount) || 0;
+            savingsGoal.savedAmount = parseFloat(savingsGoal.savedAmount) || 0;
+
             if (savingsGoal.targetAmount > 0) {
                 showDashboard();
             }
@@ -83,6 +87,7 @@ function updateUI() {
     const { targetAmount, savedAmount } = savingsGoal;
     
     const progressPercentage = targetAmount > 0 ? Math.min(100, (savedAmount / targetAmount) * 100) : 0;
+    
     progressBar.style.width = `${progressPercentage.toFixed(1)}%`;
     savedAmountDisplay.textContent = savedAmount.toLocaleString('en-IN');
     goalAmountDisplay.textContent = targetAmount.toLocaleString('en-IN');
@@ -122,8 +127,8 @@ function updateContributionsList() {
         const contributionItem = document.createElement('div');
         contributionItem.className = 'bg-gray-700 rounded-lg p-3 flex justify-between items-center contribution-item';
         
-        // CHANGED: Use 'circle' instead of 'dollar-sign' for cash
-        const methodIcon = contribution.method === 'cash' ? 'circle' : 'credit-card';
+        // Use proper feather icons based on method
+        const methodIcon = contribution.method === 'cash' ? 'pocket' : 'credit-card';
         const methodColor = contribution.method === 'cash' ? 'text-growth-green' : 'text-gray-400';
         
         contributionItem.innerHTML = `
@@ -149,6 +154,7 @@ function calculateUpiExposure() {
     const cashContributions = savingsGoal.contributions.filter(c => c.method === 'cash');
     const upiContributions = savingsGoal.contributions.filter(c => c.method === 'upi');
     
+    // Logic to calculate average savings difference
     if (cashContributions.length === 0 && upiContributions.length === 0) {
         upiExposureDisplay.innerHTML = 'Log some contributions to see if Cash or UPI helps you save more!';
         return;
@@ -161,21 +167,21 @@ function calculateUpiExposure() {
         ? upiContributions.reduce((sum, c) => sum + c.amount, 0) / upiContributions.length 
         : 0;
     
-    if (cashAvg > upiAvg && cashContributions.length > 0) {
+    if (cashAvg > upiAvg && cashContributions.length >= 3 && upiContributions.length >= 3) {
         const diff = cashAvg - upiAvg;
         upiExposureDisplay.innerHTML = `<span class="font-semibold text-growth-green">Cash drops are larger!</span> You save an average of ₹${diff.toFixed(0)} more per drop when using cash. Stay cash-strong! 💪`;
-    } else if (upiAvg > cashAvg && upiContributions.length > 0) {
+    } else if (upiAvg > cashAvg && cashContributions.length >= 3 && upiContributions.length >= 3) {
         const diff = upiAvg - cashAvg;
-        upiExposureDisplay.innerHTML = `<span class="font-semibold text-growth-green">UPI drops are larger!</span> You save an average of ₹${diff.toFixed(0)} more per drop when using UPI.`;
+        upiExposureDisplay.innerHTML = `<span class="font-semibold text-red-500">UPI drops are smaller.</span> You save an average of ₹${diff.toFixed(0)} more per drop when using Cash. Be careful with easy digital spending!`;
     } else {
-        upiExposureDisplay.innerHTML = 'Your cash and UPI contributions are balanced!';
+        upiExposureDisplay.innerHTML = 'Log at least 3 contributions of **Cash** and **UPI** to unlock your personal savings insight.';
     }
 }
 
 // Gemini API Configuration
 const API_MODEL = 'gemini-1.5-flash';
 const API_BASE_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=`;
-const apiKey = 'YOUR_API_KEY_HERE';
+const apiKey = 'YOUR_API_KEY_HERE'; // Replace with the actual key from Netlify Environment Variable setup
 
 async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
     for (let i = 0; i < retries; i++) {
@@ -197,15 +203,13 @@ async function generateMotivation() {
     const weeksLeft = calculateWeeksLeft();
     const weeklyTarget = Math.ceil((targetAmount - savedAmount) / weeksLeft);
     
+    // Construct the context-specific prompt
     const prompt = `You are a motivational coach with a witty, supportive tone tailored for young Indian college students saving money. Use relatable Indian context, humor, and slang where appropriate.
-
-Context: A college student is trying to save money using a micro-savings approach for an Indian college student. Their goal is ₹${targetAmount} (a micro-goal) and they have saved ₹${saved}, reaching ${progress.toFixed(1)}% completion with ${weeksLeft} weeks remaining. Their weekly savings target is ${weeklyTarget}. Generate a concise, single-paragraph motivational message (2-3 sentences max) that:
-- Acknowledges their progress with humor or praise
-- Gently nudges them to keep going
-- Uses conversational, friendly tone
-- Optionally references Indian college life, chai, samosas, or relatable scenarios
-
-Keep it SHORT, punchy, and authentic. No generic corporate speak.`;
+    Context: A college student has a goal of ₹${targetAmount} (a micro-goal) and has saved ₹${savedAmount}, reaching ${progress.toFixed(1)}% completion with ${weeksLeft} weeks remaining. Their weekly savings target is ₹${weeklyTarget}. Generate a concise, single-paragraph motivational message (2-3 sentences max) that:
+    - Acknowledges their progress with humor or praise
+    - Gently nudges them to keep going (e.g., 'skip that one extra chai')
+    - Uses conversational, friendly tone
+    - Focuses on the final reward (e.g., 'your gadget/trip is waiting')`;
 
     try {
         motivationLoading.classList.remove('hidden');
@@ -221,7 +225,6 @@ Keep it SHORT, punchy, and authentic. No generic corporate speak.`;
         
         const message = data.candidates[0].content.parts[0].text;
         motivationMessageDisplay.textContent = message;
-        motivationMessageDisplay.classList.add('fade-in');
         
     } catch (error) {
         console.error('Error generating motivation:', error);
@@ -242,9 +245,39 @@ function showGoalView() {
     dashboardView.classList.add('hidden');
 }
 
-function addContribution(amount, method) {
+function handleGoalSubmit() {
+    const targetAmount = parseFloat(targetAmountInput.value);
+    const deadline = deadlineInput.value;
+    
+    if (!targetAmount || targetAmount <= 0) {
+        console.error('Please enter a valid target amount');
+        return;
+    }
+    
+    if (!deadline) {
+        console.error('Please select a deadline');
+        return;
+    }
+    
+    const isNewGoal = savingsGoal.targetAmount === 0;
+
+    savingsGoal.targetAmount = targetAmount;
+    savingsGoal.deadline = deadline;
+    
+    if (isNewGoal) {
+        savingsGoal.savedAmount = 0;
+        savingsGoal.contributions = [];
+        motivationMessageDisplay.textContent = "Click below to get a personalized boost! ✨";
+    }
+
+    saveData();
+    showDashboard();
+    updateUI();
+}
+
+function handleAddContribution(amount, method) {
     if (amount <= 0 || isNaN(amount)) {
-        alert('Please enter a valid amount');
+        console.error('Please enter a valid amount');
         return;
     }
     
@@ -259,56 +292,55 @@ function addContribution(amount, method) {
     
     saveData();
     updateUI();
-    
-    contributionAmountInput.value = '';
 }
 
-// Event Listeners
-setGoalBtn.addEventListener('click', () => {
-    const targetAmount = parseFloat(targetAmountInput.value);
-    const deadline = deadlineInput.value;
-    
-    if (!targetAmount || targetAmount <= 0) {
-        alert('Please enter a valid target amount');
-        return;
-    }
-    
-    if (!deadline) {
-        alert('Please select a deadline');
-        return;
-    }
-    
-    savingsGoal.targetAmount = targetAmount;
-    savingsGoal.deadline = deadline;
-    savingsGoal.savedAmount = 0;
-    savingsGoal.contributions = [];
-    
-    saveData();
-    showDashboard();
-    updateUI();
+
+// Event Listeners Setup
+document.addEventListener('DOMContentLoaded', init);
+
+// Event listener for setting the initial goal (uses form submit)
+document.getElementById('savingsForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleGoalSubmit();
 });
 
+// Event listener for editing the goal
 editGoalBtn.addEventListener('click', () => {
     targetAmountInput.value = savingsGoal.targetAmount;
     deadlineInput.value = savingsGoal.deadline;
     showGoalView();
 });
 
-addContributionBtn.addEventListener('click', () => {
+// Event listener for adding contribution (uses form submit)
+document.getElementById('contributionForm').addEventListener('submit', (e) => {
+    e.preventDefault();
     const amount = parseFloat(contributionAmountInput.value);
     const method = cashRadio.checked ? 'cash' : 'upi';
-    addContribution(amount, method);
+    
+    handleAddContribution(amount, method);
+    
+    // Clear input after adding
+    contributionAmountInput.value = '';
 });
 
+// Quick add buttons
 quickAddBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const amount = parseFloat(btn.dataset.amount);
-        const method = cashRadio.checked ? 'cash' : 'upi';
-        addContribution(amount, method);
+        // Quick add defaults to cash for positive reinforcement
+        handleAddContribution(amount, 'cash');
     });
 });
 
+// Gemini motivation button
 generateMotivationBtn.addEventListener('click', generateMotivation);
+// --- LOGOUT HANDLER ---
+const logoutBtn = document.getElementById('logoutBtn');
 
-// Initialize on page load
-init();
+logoutBtn.addEventListener('click', () => {
+    // 1. Clear the stored session data
+    localStorage.removeItem('saveup_session');
+
+    // 2. Redirect to the login page
+    window.location.href = 'login.html'; 
+});
