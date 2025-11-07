@@ -1,4 +1,4 @@
-// === SAVEUP: Full Script with Fixed Gemini AI ===
+// === SAVEUP: Full Script with Secure Gemini Proxy ===
 
 // DOM Elements
 const goalView = document.getElementById("goalView");
@@ -40,12 +40,8 @@ function registerServiceWorker() {
     window.addEventListener("load", () => {
       navigator.serviceWorker
         .register("sw.js")
-        .then(() =>
-          console.log("ServiceWorker registration successful for offline use.")
-        )
-        .catch((err) =>
-          console.error("ServiceWorker registration failed:", err)
-        );
+        .then(() => console.log("ServiceWorker registered successfully."))
+        .catch((err) => console.error("ServiceWorker registration failed:", err));
     });
   }
 }
@@ -77,15 +73,13 @@ function init() {
     showGoalView();
   });
 
-  document
-    .getElementById("contributionForm")
-    .addEventListener("submit", (e) => {
-      e.preventDefault();
-      const amount = parseFloat(contributionAmountInput.value);
-      const method = cashRadio.checked ? "cash" : "upi";
-      handleAddContribution(amount, method);
-      contributionAmountInput.value = "";
-    });
+  document.getElementById("contributionForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const amount = parseFloat(contributionAmountInput.value);
+    const method = cashRadio.checked ? "cash" : "upi";
+    handleAddContribution(amount, method);
+    contributionAmountInput.value = "";
+  });
 
   quickAddBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -106,7 +100,6 @@ function loadData() {
       savingsGoal.targetAmount = parseFloat(savingsGoal.targetAmount) || 0;
       savingsGoal.savedAmount = parseFloat(savingsGoal.savedAmount) || 0;
       savingsGoal.contributions = savingsGoal.contributions || [];
-
       if (savingsGoal.targetAmount > 0) showDashboard();
     }
   } catch (e) {
@@ -209,34 +202,27 @@ function calculateUpiExposure() {
 
   const diff = Math.abs(avgCash - avgUpi);
   if (avgCash > avgUpi) {
-    upiExposureDisplay.innerHTML = `<span class="font-semibold text-growth-green">Cash drops are larger!</span> You save ₹${diff.toFixed(
-      0
-    )} more per drop when using cash.`;
+    upiExposureDisplay.innerHTML = `<span class="font-semibold text-growth-green">Cash drops are larger!</span> You save ₹${diff.toFixed(0)} more per drop when using cash.`;
   } else if (avgUpi > avgCash) {
-    upiExposureDisplay.innerHTML = `<span class="font-semibold text-red-500">UPI drops are larger!</span> You save ₹${diff.toFixed(
-      0
-    )} more digitally. Recheck your spending rhythm.`;
+    upiExposureDisplay.innerHTML = `<span class="font-semibold text-red-500">UPI drops are larger!</span> You save ₹${diff.toFixed(0)} more digitally.`;
   } else {
     upiExposureDisplay.innerHTML = "Your saving averages are balanced. Great discipline!";
   }
 }
 
-// === Gemini AI Config ===
-const API_URL = "/api/analyze"; // ✅ Call your backend route instead of Gemini directly
+// === Gemini AI (via backend proxy) ===
+const API_URL = "/api/analyze";
 
 async function fetchWithRetry(payload, retries = 3, delay = 1200) {
   for (let i = 0; i < retries; i++) {
     try {
-      const response = await fetch(API_URL + apiKey, {
+      const response = await fetch(API_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
       if (response.ok) return await response.json();
-      console.error(`Gemini error ${response.status}:`, await response.text());
+      console.error(`Proxy error ${response.status}:`, await response.text());
     } catch (err) {
       console.warn(`Attempt ${i + 1} failed:`, err);
     }
@@ -248,7 +234,8 @@ async function fetchWithRetry(payload, retries = 3, delay = 1200) {
 // === Spending Analysis ===
 async function generateSpendingAnalysis() {
   if (savingsGoal.contributions.length < 5) {
-    analysisMessageDisplay.textContent = "Log at least 5 contributions first for meaningful AI analysis!";
+    analysisMessageDisplay.textContent =
+      "Log at least 5 contributions first for meaningful AI analysis!";
     return;
   }
 
@@ -302,7 +289,7 @@ Data: ${lastTen}
       "Analysis inconclusive. Keep logging drops!";
     analysisMessageDisplay.textContent = text;
   } catch (error) {
-    console.error("Gemini API Error:", error);
+    console.error("Gemini Proxy Error:", error);
     analysisMessageDisplay.textContent =
       "Oops! Network error during analysis. Try again later.";
   } finally {
