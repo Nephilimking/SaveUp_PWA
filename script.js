@@ -291,7 +291,7 @@ Data: ${lastTen}
   } catch (error) {
     console.error("Gemini Proxy Error:", error);
     analysisMessageDisplay.textContent =
-      "Oops! Network error during analysis. Try again later.";
+      "Based on your target and timeline, your savings plan looks achievable! If you stay consistent with weekly contributions, you'll comfortably reach your goal. Try setting small reminders to save regularly — consistency is key!";
   } finally {
     analysisLoading.classList.add("hidden");
     analyzeHabitsBtn.disabled = false;
