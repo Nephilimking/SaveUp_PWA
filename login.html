@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00A86B">
+    <title>SaveUp - Login</title>
+    <link rel="icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'growth-green': '#00A86B',
+                        'charcoal': '#333333',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4 py-8 max-w-md">
+        <!-- Login View -->
+        <div id="loginView" class="bg-gray-800 rounded-xl p-6 shadow-2xl">
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-growth-green flex items-center justify-center">
+                    <span class="mr-2 text-4xl leading-none">₹</span>
+                    SaveUp
+                </h1>
+                <p class="text-gray-400 mt-2">Login to track your savings</p>
+            </div>
+
+            <form id="loginForm" class="space-y-4">
+                <!-- Login Method Toggle -->
+                <div class="flex gap-2 mb-4">
+                    <button 
+                        type="button" 
+                        id="phoneToggle" 
+                        class="flex-1 py-2 px-4 rounded-lg font-medium transition duration-200 bg-growth-green text-white">
+                        Phone
+                    </button>
+                    <button 
+                        type="button" 
+                        id="emailToggle" 
+                        class="flex-1 py-2 px-4 rounded-lg font-medium transition duration-200 bg-gray-700 text-gray-300 hover:bg-gray-600">
+                        Email
+                    </button>
+                </div>
+
+                <!-- Phone Login Section -->
+                <div id="phoneSection">
+                    <label for="phoneNumber" class="block text-sm font-medium text-gray-300 mb-1">
+                        Phone Number
+                    </label>
+                    <div class="flex">
+                        <span class="inline-flex items-center px-3 bg-gray-700 border border-r-0 border-gray-600 rounded-l-lg text-gray-400">
+                            +91
+                        </span>
+                        <input 
+                            type="tel" 
+                            id="phoneNumber" 
+                            maxlength="10"
+                            pattern="[0-9]{10}"
+                            class="flex-1 bg-gray-700 border border-gray-600 rounded-r-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" 
+                            placeholder="9876543210">
+                    </div>
+                </div>
+
+                <!-- Email Login Section -->
+                <div id="emailSection" class="hidden">
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-1">
+                        Email Address
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" 
+                        placeholder="your.email@example.com">
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    <i data-feather="log-in" class="w-5 h-5 mr-2"></i>
+                    Send OTP
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-sm text-gray-400">
+                <p>🔒 Your data is stored securely on your device</p>
+            </div>
+        </div>
+
+        <!-- OTP Verification View -->
+        <div id="otpView" class="hidden bg-gray-800 rounded-xl p-6 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="bg-growth-green/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <i data-feather="shield" class="w-8 h-8 text-growth-green"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-growth-green mb-2">Verify OTP</h2>
+                <p class="text-gray-400 text-sm">
+                    Enter the 6-digit code sent to<br>
+                    <span id="displayPhone" class="text-growth-green font-medium"></span>
+                </p>
+            </div>
+
+            <form id="otpForm" class="space-y-4">
+                <div>
+                    <div class="flex justify-center gap-2 mb-4">
+                        <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-2xl bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-growth-green focus:border-growth-green" required>
+                        <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-2xl bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-growth-green focus:border-growth-green" required>
+                        <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-2xl bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-growth-green focus:border-growth-green" required>
+                        <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-2xl bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-growth-green focus:border-growth-green" required>
+                        <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-2xl bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-growth-green focus:border-growth-green" required>
+                        <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center text-2xl bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-growth-green focus:border-growth-green" required>
+                    </div>
+                    
+                    <div id="otpDisplay" class="text-center mb-4 p-3 bg-gray-700 rounded-lg border border-growth-green/50">
+                        <p class="text-xs text-gray-400 mb-1">Demo OTP (auto-filled):</p>
+                        <p class="text-xl font-bold text-growth-green" id="demoOtp">123456</p>
+                    </div>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    <i data-feather="check-circle" class="w-5 h-5 mr-2"></i>
+                    Verify & Login
+                </button>
+
+                <button 
+                    type="button"
+                    id="resendOtp"
+                    class="w-full bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-200">
+                    Resend OTP
+                </button>
+
+                <button 
+                    type="button"
+                    id="backToLogin"
+                    class="w-full text-gray-400 hover:text-growth-green text-sm transition duration-200">
+                    ← Back to Login
+                </button>
+            </form>
+        </div>
+
+        <!-- Dashboard View (Your existing SaveUp app will go here) -->
+        <div id="dashboardContainer" class="hidden">
+            <div class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-xl font-semibold text-growth-green">Welcome Back!</h2>
+                        <p class="text-sm text-gray-400" id="userEmail"></p>
+                        <p class="text-sm text-gray-400" id="userPhone"></p>
+                    </div>
+                    <button id="logoutBtn" class="text-gray-400 hover:text-red-400 transition duration-200">
+                        <i data-feather="log-out" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Your SaveUp Dashboard Content -->
+            <div class="bg-gray-800 rounded-xl p-6 shadow-lg">
+                <h3 class="text-lg font-semibold text-growth-green mb-4">Your Savings Dashboard</h3>
+                <p class="text-gray-400 mb-4">
+                    Copy your existing SaveUp dashboard HTML here, or redirect to your main app.
+                </p>
+                <a href="index.html" class="inline-block bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    Go to Dashboard →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginView = document.getElementById('loginView');
+        const otpView = document.getElementById('otpView');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const loginForm = document.getElementById('loginForm');
+        const otpForm = document.getElementById('otpForm');
+        const phoneInput = document.getElementById('phoneNumber');
+        const emailInput = document.getElementById('email');
+        const displayPhone = document.getElementById('displayPhone');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const demoOtpDisplay = document.getElementById('demoOtp');
+        const resendOtpBtn = document.getElementById('resendOtp');
+        const backToLoginBtn = document.getElementById('backToLogin');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userEmailDisplay = document.getElementById('userEmail');
+        const userPhoneDisplay = document.getElementById('userPhone');
+
+        // State
+        let currentUser = {
+            phone: '',
+            email: '',
+            generatedOtp: '',
+            loginMethod: 'phone' // 'phone' or 'email'
+        };
+
+        // Initialize
+        function init() {
+            checkExistingSession();
+            setupLoginMethodToggle();
+            feather.replace();
+        }
+
+        // Setup login method toggle
+        function setupLoginMethodToggle() {
+            const phoneToggle = document.getElementById('phoneToggle');
+            const emailToggle = document.getElementById('emailToggle');
+            const phoneSection = document.getElementById('phoneSection');
+            const emailSection = document.getElementById('emailSection');
+
+            phoneToggle.addEventListener('click', () => {
+                currentUser.loginMethod = 'phone';
+                phoneToggle.classList.add('bg-growth-green', 'text-white');
+                phoneToggle.classList.remove('bg-gray-700', 'text-gray-300');
+                emailToggle.classList.remove('bg-growth-green', 'text-white');
+                emailToggle.classList.add('bg-gray-700', 'text-gray-300');
+                phoneSection.classList.remove('hidden');
+                emailSection.classList.add('hidden');
+            });
+
+            emailToggle.addEventListener('click', () => {
+                currentUser.loginMethod = 'email';
+                emailToggle.classList.add('bg-growth-green', 'text-white');
+                emailToggle.classList.remove('bg-gray-700', 'text-gray-300');
+                phoneToggle.classList.remove('bg-growth-green', 'text-white');
+                phoneToggle.classList.add('bg-gray-700', 'text-gray-300');
+                emailSection.classList.remove('hidden');
+                phoneSection.classList.add('hidden');
+            });
+        }
+
+        // Check if user is already logged in
+        function checkExistingSession() {
+            const sessionUser = localStorage.getItem('saveup_session');
+            if (sessionUser) {
+                const user = JSON.parse(sessionUser);
+                showDashboard(user);
+            }
+        }
+
+        // Generate random 6-digit OTP
+        function generateOTP() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Login Form Submit
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const phone = phoneInput.value.trim();
+            const email = emailInput.value.trim();
+
+            // Validate based on login method
+            if (currentUser.loginMethod === 'phone') {
+                if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
+                    alert('Please enter a valid 10-digit phone number');
+                    return;
+                }
+                currentUser.phone = phone;
+                displayPhone.textContent = `+91 ${phone}`;
+            } else {
+                if (!email.includes('@') || !email.includes('.')) {
+                    alert('Please enter a valid email address');
+                    return;
+                }
+                currentUser.email = email;
+                displayPhone.textContent = email;
+            }
+
+            // Store user data
+            currentUser.generatedOtp = generateOTP();
+
+            // Display OTP (in real app, this would be sent via SMS/Email)
+            demoOtpDisplay.textContent = currentUser.generatedOtp;
+
+            // Auto-fill OTP for demo (remove in production)
+            const otpDigits = currentUser.generatedOtp.split('');
+            otpInputs.forEach((input, index) => {
+                input.value = otpDigits[index];
+            });
+
+            // Show OTP view
+            loginView.classList.add('hidden');
+            otpView.classList.remove('hidden');
+            
+            // Focus first OTP input
+            setTimeout(() => otpInputs[0].focus(), 100);
+            feather.replace();
+        });
+
+        // OTP Input Navigation
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            // Only allow numbers
+            input.addEventListener('keypress', (e) => {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // OTP Form Submit
+        otpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Get entered OTP
+            const enteredOtp = Array.from(otpInputs).map(input => input.value).join('');
+
+            // Verify OTP
+            if (enteredOtp === currentUser.generatedOtp) {
+                // Save session
+                const userData = {
+                    phone: currentUser.phone || '',
+                    email: currentUser.email || '',
+                    loginMethod: currentUser.loginMethod,
+                    loginTime: new Date().toISOString()
+                };
+                localStorage.setItem('saveup_session', JSON.stringify(userData));
+
+                // Show success and redirect
+                showDashboard(userData);
+            } else {
+                alert('Invalid OTP. Please try again.');
+                otpInputs.forEach(input => input.value = '');
+                otpInputs[0].focus();
+            }
+        });
+
+        // Resend OTP
+        resendOtpBtn.addEventListener('click', () => {
+            currentUser.generatedOtp = generateOTP();
+            demoOtpDisplay.textContent = currentUser.generatedOtp;
+            
+            // Auto-fill new OTP for demo
+            const otpDigits = currentUser.generatedOtp.split('');
+            otpInputs.forEach((input, index) => {
+                input.value = otpDigits[index];
+            });
+
+            // Show notification
+            const originalText = resendOtpBtn.textContent;
+            resendOtpBtn.textContent = '✓ New OTP Sent!';
+            resendOtpBtn.classList.add('bg-growth-green');
+            setTimeout(() => {
+                resendOtpBtn.textContent = originalText;
+                resendOtpBtn.classList.remove('bg-growth-green');
+            }, 2000);
+        });
+
+        // Back to Login
+        backToLoginBtn.addEventListener('click', () => {
+            otpView.classList.add('hidden');
+            loginView.classList.remove('hidden');
+            otpInputs.forEach(input => input.value = '');
+            feather.replace();
+        });
+
+        // Show Dashboard
+        function showDashboard(user) {
+            loginView.classList.add('hidden');
+            otpView.classList.add('hidden');
+            dashboardContainer.classList.remove('hidden');
+
+            if (user.loginMethod === 'phone' || user.phone) {
+                userPhoneDisplay.textContent = `+91 ${user.phone}`;
+                userEmailDisplay.textContent = '';
+            } else {
+                userEmailDisplay.textContent = user.email;
+                userPhoneDisplay.textContent = '';
+            }
+
+            feather.replace();
+        }
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('saveup_session');
+                dashboardContainer.classList.add('hidden');
+                loginView.classList.remove('hidden');
+                phoneInput.value = '';
+                emailInput.value = '';
+                otpInputs.forEach(input => input.value = '');
+                feather.replace();
+            }
+        });
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
