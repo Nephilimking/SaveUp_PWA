@@ -265,7 +265,7 @@ Data: ${lastTen}
   const payload = {
     contents: [
       {
-        role: "model",
+        role: "user",
         parts: [
           {
             text:
