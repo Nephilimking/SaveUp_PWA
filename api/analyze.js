@@ -1,3 +1,4 @@
+// api/analyze.js
 export default async function handler(req, res) {
   try {
     const GEMINI_URL =
@@ -13,6 +14,8 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+
+    // Forward response & status for easier debugging
     res.status(response.status).json(data);
   } catch (err) {
     console.error("Gemini proxy error:", err);
