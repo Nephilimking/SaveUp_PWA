@@ -8,12 +8,12 @@
   "theme_color": "#00A86B",
   "icons": [
     {
-      "src": "./icon-192.png", 
+      "src": "./saveup-logo-192.png", // <-- UPDATED FILE NAME
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icon-512.png", 
+      "src": "./saveup-logo-512.png", // <-- UPDATED FILE NAME
       "sizes": "512x512",
       "type": "image/png"
     }
