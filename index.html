@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#00A86B">
     <title>SaveUp - The DripStop</title>
+    
+    <!-- CRITICAL SESSION CHECK: Runs first to enforce login -->
+    <script>
+        const sessionUser = localStorage.getItem('saveup_session');
+        if (!sessionUser) {
+            // Redirect to login page if no session is found
+            window.location.href = 'login.html'; 
+        }
+    </script>
+    
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -23,22 +33,28 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-md">
-        <header class="mb-8">
+        
+        <!-- HEADER (NOW WITH LOGOUT BUTTON) -->
+        <header class="mb-8 flex justify-between items-center">
             <h1 class="text-3xl font-bold text-growth-green flex items-center">
                 <span class="mr-2 text-4xl leading-none">₹</span>
                 SaveUp
             </h1>
-            <p class="text-gray-400">Stop the leak. Get your date back.</p>
+            <!-- LOGOUT BUTTON MUST BE HERE -->
+            <button id="logoutBtn" class="text-gray-400 hover:text-red-500 transition duration-200">
+                <i data-feather="log-out" class="w-6 h-6"></i>
+            </button>
         </header>
 
         <main>
+            <!-- Goal Setting View (Initial View) -->
             <div id="goalView" class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
                 <h2 class="text-xl font-semibold mb-4 text-growth-green">Set Your Goal</h2>
-                <div class="space-y-4">
+                <form id="savingsForm" class="space-y-4">
                     <div>
                         <label for="targetAmount" class="block text-sm font-medium text-gray-300 mb-1">Target Amount (₹)</label>
                         <input type="number" id="targetAmount" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="5000">
@@ -47,46 +63,53 @@
                         <label for="deadline" class="block text-sm font-medium text-gray-300 mb-1">Deadline</label>
                         <input type="date" id="deadline" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green">
                     </div>
-                    <button id="setGoalBtn" class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
+                    <button id="setGoalBtn" type="submit" class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
                         Set Savings Goal
                     </button>
-                </div>
+                </form>
             </div>
 
-            <div id="dashboardView" class="hidden bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-semibold text-growth-green">Savings Progress</h2>
-                    <button id="editGoalBtn" class="text-gray-400 hover:text-growth-green">
-                        <i data-feather="edit-2" class="w-5 h-5"></i>
-                    </button>
-                </div>
-
-                <div class="mb-6">
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm text-gray-400">Saved: ₹<span id="savedAmount">0</span></span>
-                        <span class="text-sm text-gray-400">Goal: ₹<span id="goalAmount">0</span></span>
+            <!-- Dashboard View (Hidden by Default) -->
+            <div id="dashboardView" class="hidden bg-gray-800 rounded-xl p-6 mb-6 shadow-lg space-y-6">
+                
+                <!-- Progress Card -->
+                <div class="bg-gray-800 rounded-xl p-6 shadow-lg -m-6 mb-0">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-growth-green">Savings Progress</h2>
+                        <button id="editGoalBtn" class="text-gray-400 hover:text-growth-green">
+                            <i data-feather="edit-2" class="w-5 h-5"></i>
+                        </button>
                     </div>
-                    <div class="h-4 bg-gray-700 rounded-full overflow-hidden">
-                        <div id="progressBar" class="h-full bg-growth-green rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                    <p class="text-center text-sm font-medium mt-2 text-gray-300">
-                        <span id="progressPercentage">0%</span> Complete
-                    </p>
-                </div>
 
-                <div class="bg-gray-700 rounded-lg p-4 mb-6">
-                    <div class="flex items-center">
-                        <div class="bg-growth-green rounded-full p-2 mr-3">
-                            <i data-feather="calendar" class="w-5 h-5 text-white"></i>
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-400">Saved: ₹<span id="savedAmount">0</span></span>
+                            <span class="text-sm text-gray-400">Goal: ₹<span id="goalAmount">0</span></span>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Weekly Target (Remaining)</p>
-                            <p class="font-semibold text-xl">₹<span id="weeklyTarget">0</span></p>
+                        <div class="h-4 bg-gray-700 rounded-full overflow-hidden">
+                            <div id="progressBar" class="h-full bg-growth-green rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-center text-sm font-medium mt-2 text-gray-300">
+                            <span id="progressPercentage">0%</span> Complete
+                        </p>
+                    </div>
+
+                    <!-- Weekly Target -->
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="bg-growth-green rounded-full p-2 mr-3">
+                                <i data-feather="calendar" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Weekly Target (Remaining)</p>
+                                <p class="font-semibold text-xl">₹<span id="weeklyTarget">0</span></p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="mb-8 p-4 bg-gray-700 rounded-xl border border-growth-green/50">
+                
+                <!-- Gemini Motivation Feature -->
+                <div class="p-4 bg-gray-700 rounded-xl border border-growth-green/50">
                     <h3 class="text-lg font-semibold mb-3 text-growth-green">Motivation Drop ✨</h3>
                     <p id="motivationMessage" class="text-base text-gray-300 mb-4 italic">
                         Click below to get a personalized boost!
@@ -98,14 +121,17 @@
                     <div id="motivationLoading" class="text-center mt-2 hidden text-gray-400">Generating insight...</div>
                 </div>
 
-                <div class="mb-8 p-4 bg-gray-700 rounded-lg">
+                <!-- Insights: UPI Tax Exposure -->
+                <div class="p-4 bg-gray-700 rounded-lg">
                     <h3 class="text-sm font-medium text-gray-300 mb-2">UPI Tax Exposure Insight</h3>
                     <p id="upiExposure" class="text-base text-gray-400">
                         Log some contributions to see if Cash or UPI helps you save more!
                     </p>
                 </div>
 
-                <div class="mb-6">
+
+                <!-- Quick Add Buttons -->
+                <div class="pt-2">
                     <p class="text-sm text-gray-400 mb-3">Quick Add (Zero-Tap Log)</p>
                     <div class="grid grid-cols-3 gap-3">
                         <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="20">₹20</button>
@@ -114,27 +140,31 @@
                     </div>
                 </div>
 
+                <!-- Contribution Form -->
                 <div>
                     <p class="text-sm text-gray-400 mb-3">Manual Contribution</p>
-                    <div class="flex mb-3">
-                        <div class="flex items-center mr-4">
-                            <input id="cashRadio" type="radio" name="paymentMethod" value="cash" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-growth-green" checked>
-                            <label for="cashRadio" class="ml-2 text-sm font-medium text-gray-300">Cash</label>
+                    <form id="contributionForm">
+                        <div class="flex mb-3">
+                            <div class="flex items-center mr-4">
+                                <input id="cashRadio" type="radio" name="paymentMethod" value="cash" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green" checked>
+                                <label for="cashRadio" class="ml-2 text-sm font-medium text-gray-300">Cash</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="upiRadio" type="radio" name="paymentMethod" value="upi" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green">
+                                <label for="upiRadio" class="ml-2 text-sm font-medium text-gray-300">UPI</label>
+                            </div>
                         </div>
-                        <div class="flex items-center">
-                            <input id="upiRadio" type="radio" name="paymentMethod" value="upi" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-growth-green">
-                            <label for="upiRadio" class="ml-2 text-sm font-medium text-gray-300">UPI</label>
+                        <div class="flex">
+                            <input type="number" id="contributionAmount" class="flex-1 bg-gray-700 border border-gray-600 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="Amount">
+                            <button id="addContributionBtn" type="submit" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">
+                                Add
+                            </button>
                         </div>
-                    </div>
-                    <div class="flex">
-                        <input type="number" id="contributionAmount" class="flex-1 bg-gray-700 border border-gray-600 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="Amount">
-                        <button id="addContributionBtn" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">
-                            Add
-                        </button>
-                    </div>
+                    </form>
                 </div>
             </div>
 
+            <!-- Contributions History -->
             <div id="historyView" class="bg-gray-800 rounded-xl p-6 shadow-lg">
                 <h2 class="text-xl font-semibold mb-4 text-growth-green">Recent Drops</h2>
                 <div id="contributionsList" class="space-y-3">
@@ -147,35 +177,6 @@
     <script src="script.js"></script>
     <script>
         feather.replace();
-        // The service worker registration moved to script.js for synchronized loading after init
-        
-        // Aggressive fix for dollar signs to rupee symbols
-        function replaceDollarSigns() {
-            const contributionsList = document.getElementById('contributionsList');
-            if (contributionsList) {
-                // Replace in all text nodes
-                const walk = document.createTreeWalker(contributionsList, NodeFilter.SHOW_TEXT);
-                let node;
-                while (node = walk.nextNode()) {
-                    if (node.nodeValue && node.nodeValue.includes('$')) {
-                        node.nodeValue = node.nodeValue.replace(/\$/g, '₹');
-                    }
-                }
-            }
-        }
-        
-        // Run immediately and on any changes
-        const observer = new MutationObserver(replaceDollarSigns);
-        observer.observe(document.getElementById('contributionsList'), {
-            childList: true,
-            subtree: true,
-            characterData: true
-        });
-        
-        // Also run on page load
-        setTimeout(replaceDollarSigns, 100);
-        setTimeout(replaceDollarSigns, 500);
-        setTimeout(replaceDollarSigns, 1000);
     </script>
 </body>
 </html>
