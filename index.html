@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#00A86B">
     <title>SaveUp - The DripStop</title>
     
-    <!-- CRITICAL SESSION CHECK: Runs first to enforce login -->
     <script>
         const sessionUser = localStorage.getItem('saveup_session');
         if (!sessionUser) {
@@ -27,6 +26,8 @@
                     colors: {
                         'growth-green': '#00A86B', // Primary Accent Color
                         'charcoal': '#333333', // Primary Text/Darker BG
+                        'card-bg': '#1f2937', // Added for consistency
+                        'input-bg': '#374151', // Added for consistency
                     }
                 }
             }
@@ -38,20 +39,18 @@
 <body class="bg-gray-900 text-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-md">
         
-        <!-- HEADER (NOW WITH LOGOUT BUTTON) -->
         <header class="mb-8 flex justify-between items-center">
             <h1 class="text-3xl font-bold text-growth-green flex items-center">
                 <span class="mr-2 text-4xl leading-none">₹</span>
                 SaveUp
             </h1>
-            <!-- LOGOUT BUTTON MUST BE HERE -->
             <button id="logoutBtn" class="text-gray-400 hover:text-red-500 transition duration-200">
                 <i data-feather="log-out" class="w-6 h-6"></i>
             </button>
         </header>
 
+
         <main>
-            <!-- Goal Setting View (Initial View) -->
             <div id="goalView" class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
                 <h2 class="text-xl font-semibold mb-4 text-growth-green">Set Your Goal</h2>
                 <form id="savingsForm" class="space-y-4">
@@ -69,10 +68,9 @@
                 </form>
             </div>
 
-            <!-- Dashboard View (Hidden by Default) -->
+
             <div id="dashboardView" class="hidden bg-gray-800 rounded-xl p-6 mb-6 shadow-lg space-y-6">
                 
-                <!-- Progress Card -->
                 <div class="bg-gray-800 rounded-xl p-6 shadow-lg -m-6 mb-0">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-xl font-semibold text-growth-green">Savings Progress</h2>
@@ -80,6 +78,7 @@
                             <i data-feather="edit-2" class="w-5 h-5"></i>
                         </button>
                     </div>
+
 
                     <div class="mb-6">
                         <div class="flex justify-between mb-2">
@@ -94,7 +93,7 @@
                         </p>
                     </div>
 
-                    <!-- Weekly Target -->
+
                     <div class="bg-gray-700 rounded-lg p-4">
                         <div class="flex items-center">
                             <div class="bg-growth-green rounded-full p-2 mr-3">
@@ -108,29 +107,25 @@
                     </div>
                 </div>
                 
-                <!-- Gemini Motivation Feature -->
-                <div class="p-4 bg-gray-700 rounded-xl border border-growth-green/50">
-                    <h3 class="text-lg font-semibold mb-3 text-growth-green">Motivation Drop ✨</h3>
-                    <p id="motivationMessage" class="text-base text-gray-300 mb-4 italic">
-                        Click below to get a personalized boost!
+                <!-- Spending Leak Analysis Section - Retained -->
+                <div class="p-4 bg-gray-700 rounded-xl border border-red-500/50">
+                    <h3 class="text-lg font-semibold mb-3 text-red-500">Spending Leak Analysis 🚨</h3>
+                    <p id="analysisMessage" class="text-base text-gray-300 mb-4 italic">
+                        Click below for AI analysis on your recent saving habits.
                     </p>
-                    <button id="generateMotivationBtn" class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-2 rounded-lg transition duration-200 flex items-center justify-center">
-                        <i data-feather="zap" class="w-4 h-4 mr-2"></i>
-                        Get Motivated!
+                    <button id="analyzeHabitsBtn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg transition duration-200 flex items-center justify-center">
+                        <i data-feather="bar-chart-2" class="w-4 h-4 mr-2"></i> Find My Saving Trends
                     </button>
-                    <div id="motivationLoading" class="text-center mt-2 hidden text-gray-400">Generating insight...</div>
+                    <div id="analysisLoading" class="text-center mt-2 hidden text-gray-400">Analyzing data...</div>
                 </div>
-
-                <!-- Insights: UPI Tax Exposure -->
+                
                 <div class="p-4 bg-gray-700 rounded-lg">
                     <h3 class="text-sm font-medium text-gray-300 mb-2">UPI Tax Exposure Insight</h3>
                     <p id="upiExposure" class="text-base text-gray-400">
                         Log some contributions to see if Cash or UPI helps you save more!
                     </p>
                 </div>
-
-
-                <!-- Quick Add Buttons -->
+                
                 <div class="pt-2">
                     <p class="text-sm text-gray-400 mb-3">Quick Add (Zero-Tap Log)</p>
                     <div class="grid grid-cols-3 gap-3">
@@ -140,31 +135,29 @@
                     </div>
                 </div>
 
-                <!-- Contribution Form -->
-                <div>
+
+                <form id="contributionForm">
                     <p class="text-sm text-gray-400 mb-3">Manual Contribution</p>
-                    <form id="contributionForm">
-                        <div class="flex mb-3">
-                            <div class="flex items-center mr-4">
-                                <input id="cashRadio" type="radio" name="paymentMethod" value="cash" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green" checked>
-                                <label for="cashRadio" class="ml-2 text-sm font-medium text-gray-300">Cash</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input id="upiRadio" type="radio" name="paymentMethod" value="upi" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green">
-                                <label for="upiRadio" class="ml-2 text-sm font-medium text-gray-300">UPI</label>
-                            </div>
+                    <div class="flex mb-3">
+                        <div class="flex items-center mr-4">
+                            <input id="cashRadio" type="radio" name="paymentMethod" value="cash" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green" checked>
+                            <label for="cashRadio" class="ml-2 text-sm font-medium text-gray-300">Cash</label>
                         </div>
-                        <div class="flex">
-                            <input type="number" id="contributionAmount" class="flex-1 bg-gray-700 border border-gray-600 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="Amount">
-                            <button id="addContributionBtn" type="submit" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">
-                                Add
-                            </button>
+                        <div class="flex items-center">
+                            <input id="upiRadio" type="radio" name="paymentMethod" value="upi" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green">
+                            <label for="upiRadio" class="ml-2 text-sm font-medium text-gray-300">UPI</label>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="flex">
+                        <input type="number" id="contributionAmount" class="flex-1 bg-gray-700 border border-gray-600 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="Amount">
+                        <button id="addContributionBtn" type="submit" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">
+                            Add
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <!-- Contributions History -->
+
             <div id="historyView" class="bg-gray-800 rounded-xl p-6 shadow-lg">
                 <h2 class="text-xl font-semibold mb-4 text-growth-green">Recent Drops</h2>
                 <div id="contributionsList" class="space-y-3">
@@ -173,6 +166,7 @@
             </div>
         </main>
     </div>
+
 
     <script src="script.js"></script>
     <script>
