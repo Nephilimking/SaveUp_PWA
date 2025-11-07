@@ -50,6 +50,7 @@
         </header>
 
 
+
         <main>
             <div id="goalView" class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
                 <h2 class="text-xl font-semibold mb-4 text-growth-green">Set Your Goal</h2>
@@ -69,6 +70,7 @@
             </div>
 
 
+
             <div id="dashboardView" class="hidden bg-gray-800 rounded-xl p-6 mb-6 shadow-lg space-y-6">
                 
                 <div class="bg-gray-800 rounded-xl p-6 shadow-lg -m-6 mb-0">
@@ -78,6 +80,7 @@
                             <i data-feather="edit-2" class="w-5 h-5"></i>
                         </button>
                     </div>
+
 
 
                     <div class="mb-6">
@@ -92,6 +95,7 @@
                             <span id="progressPercentage">0%</span> Complete
                         </p>
                     </div>
+
 
 
                     <div class="bg-gray-700 rounded-lg p-4">
@@ -128,12 +132,16 @@
                 
                 <div class="pt-2">
                     <p class="text-sm text-gray-400 mb-3">Quick Add (Zero-Tap Log)</p>
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-3 grid-rows-2 gap-3">
                         <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="20">₹20</button>
                         <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="50">₹50</button>
                         <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="100">₹100</button>
+                        <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="200">₹200</button>
+                        <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="500">₹500</button>
+                        <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="1000">₹1000</button>
                     </div>
                 </div>
+
 
 
                 <form id="contributionForm">
@@ -158,6 +166,7 @@
             </div>
 
 
+
             <div id="historyView" class="bg-gray-800 rounded-xl p-6 shadow-lg">
                 <h2 class="text-xl font-semibold mb-4 text-growth-green">Recent Drops</h2>
                 <div id="contributionsList" class="space-y-3">
@@ -166,6 +175,7 @@
             </div>
         </main>
     </div>
+
 
 
     <script src="script.js"></script>
