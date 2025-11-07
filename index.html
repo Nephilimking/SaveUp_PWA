@@ -1,195 +1,211 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#00A86B">
-    <title>SaveUp - The DripStop</title>
-    
-    <!-- CRITICAL SESSION CHECK: Runs first to enforce login -->
-    <script>
-        const sessionUser = localStorage.getItem('saveup_session');
-        if (!sessionUser) {
-            // Redirect to login page if no session is found
-            window.location.href = 'login.html'; 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#00A86B" />
+  <meta name="description" content="SaveUp helps you build saving discipline, track goals, and analyze your spending habits with AI insights." />
+  <title>SaveUp – Smart Savings Tracker</title>
+
+  <!-- Session Redirect -->
+  <script>
+    const sessionUser = localStorage.getItem("saveup_session");
+    if (!sessionUser) window.location.href = "login.html";
+  </script>
+
+  <!-- Manifest & Icons -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "growth-green": "#00A86B",
+            "charcoal": "#333333",
+            "card-bg": "#1f2937",
+            "input-bg": "#374151"
+          }
         }
-    </script>
-    
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="favicon.ico">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        // Custom Tailwind config for Green/Black color scheme
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'growth-green': '#00A86B', // Primary Accent Color
-                        'charcoal': '#333333', // Primary Text/Darker BG
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="style.css"> 
+      }
+    };
+  </script>
+
+  <!-- Feather Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body class="bg-gray-900 text-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-md">
-        
-        <!-- HEADER (NOW WITH LOGOUT BUTTON) -->
-        <header class="mb-8 flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-growth-green flex items-center">
-                <span class="mr-2 text-4xl leading-none">₹</span>
-                SaveUp
-            </h1>
-            <!-- LOGOUT BUTTON MUST BE HERE -->
-            <button id="logoutBtn" class="text-gray-400 hover:text-red-500 transition duration-200">
-                <i data-feather="log-out" class="w-6 h-6"></i>
+  <div class="container mx-auto px-4 py-8 max-w-md">
+    <!-- Header -->
+    <header class="mb-8 flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-growth-green flex items-center">
+        <span class="mr-2 text-4xl leading-none">₹</span> SaveUp
+      </h1>
+      <button id="logoutBtn" class="text-gray-400 hover:text-red-500 transition duration-200">
+        <i data-feather="log-out" class="w-6 h-6"></i>
+      </button>
+    </header>
+
+    <!-- Main -->
+    <main>
+      <!-- Goal View -->
+      <div id="goalView" class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
+        <h2 class="text-xl font-semibold mb-4 text-growth-green">Set Your Goal</h2>
+        <form id="savingsForm" class="space-y-4">
+          <div>
+            <label for="targetAmount" class="block text-sm font-medium text-gray-300 mb-1">
+              Target Amount (₹)
+            </label>
+            <input
+              type="number"
+              id="targetAmount"
+              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green"
+              placeholder="5000"
+            />
+          </div>
+          <div>
+            <label for="deadline" class="block text-sm font-medium text-gray-300 mb-1">
+              Deadline
+            </label>
+            <input
+              type="date"
+              id="deadline"
+              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green"
+            />
+          </div>
+          <button
+            id="setGoalBtn"
+            type="submit"
+            class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200"
+          >
+            Set Savings Goal
+          </button>
+        </form>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dashboardView" class="hidden bg-gray-800 rounded-xl p-6 mb-6 shadow-lg space-y-6">
+        <!-- Progress -->
+        <div class="bg-gray-800 rounded-xl p-6 shadow-lg -m-6 mb-0">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold text-growth-green">Savings Progress</h2>
+            <button id="editGoalBtn" class="text-gray-400 hover:text-growth-green">
+              <i data-feather="edit-2" class="w-5 h-5"></i>
             </button>
-        </header>
+          </div>
 
-        <main>
-            <!-- Goal Setting View (Initial View) -->
-            <div id="goalView" class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-growth-green">Set Your Goal</h2>
-                <form id="savingsForm" class="space-y-4">
-                    <div>
-                        <label for="targetAmount" class="block text-sm font-medium text-gray-300 mb-1">Target Amount (₹)</label>
-                        <input type="number" id="targetAmount" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="5000">
-                    </div>
-                    <div>
-                        <label for="deadline" class="block text-sm font-medium text-gray-300 mb-1">Deadline</label>
-                        <input type="date" id="deadline" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green">
-                    </div>
-                    <button id="setGoalBtn" type="submit" class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">
-                        Set Savings Goal
-                    </button>
-                </form>
+          <div class="mb-6">
+            <div class="flex justify-between mb-2">
+              <span class="text-sm text-gray-400">Saved: ₹<span id="savedAmount">0</span></span>
+              <span class="text-sm text-gray-400">Goal: ₹<span id="goalAmount">0</span></span>
             </div>
-
-            <!-- Dashboard View (Hidden by Default) -->
-            <div id="dashboardView" class="hidden bg-gray-800 rounded-xl p-6 mb-6 shadow-lg space-y-6">
-                
-                <!-- Progress Card -->
-                <div class="bg-gray-800 rounded-xl p-6 shadow-lg -m-6 mb-0">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-semibold text-growth-green">Savings Progress</h2>
-                        <button id="editGoalBtn" class="text-gray-400 hover:text-growth-green">
-                            <i data-feather="edit-2" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-
-                    <div class="mb-6">
-                        <div class="flex justify-between mb-2">
-                            <span class="text-sm text-gray-400">Saved: ₹<span id="savedAmount">0</span></span>
-                            <span class="text-sm text-gray-400">Goal: ₹<span id="goalAmount">0</span></span>
-                        </div>
-                        <div class="h-4 bg-gray-700 rounded-full overflow-hidden">
-                            <div id="progressBar" class="h-full bg-growth-green rounded-full transition-all duration-500" style="width: 0%"></div>
-                        </div>
-                        <p class="text-center text-sm font-medium mt-2 text-gray-300">
-                            <span id="progressPercentage">0%</span> Complete
-                        </p>
-                    </div>
-
-                    <!-- Weekly Target -->
-                    <div class="bg-gray-700 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <div class="bg-growth-green rounded-full p-2 mr-3">
-                                <i data-feather="calendar" class="w-5 h-5 text-white"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Weekly Target (Remaining)</p>
-                                <p class="font-semibold text-xl">₹<span id="weeklyTarget">0</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Gemini Motivation Feature -->
-                <div class="p-4 bg-gray-700 rounded-xl border border-growth-green/50">
-                    <h3 class="text-lg font-semibold mb-3 text-growth-green">Motivation Drop ✨</h3>
-                    <p id="motivationMessage" class="text-base text-gray-300 mb-4 italic">
-                        Click below to get a personalized boost!
-                    </p>
-                    <button id="generateMotivationBtn" class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-2 rounded-lg transition duration-200 flex items-center justify-center">
-                        <i data-feather="zap" class="w-4 h-4 mr-2"></i>
-                        Get Motivated!
-                    </button>
-                    <div id="motivationLoading" class="text-center mt-2 hidden text-gray-400">Generating insight...</div>
-                </div>
-
-                <!-- Insights: UPI Tax Exposure -->
-                <div class="p-4 bg-gray-700 rounded-lg">
-                    <h3 class="text-sm font-medium text-gray-300 mb-2">UPI Tax Exposure Insight</h3>
-                    <p id="upiExposure" class="text-base text-gray-400">
-                        Log some contributions to see if Cash or UPI helps you save more!
-                    </p>
-                </div>
-
-
-                <!-- Quick Add Buttons -->
-                <div class="pt-2">
-                    <p class="text-sm text-gray-400 mb-3">Quick Add (Zero-Tap Log)</p>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="20">₹20</button>
-                        <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="50">₹50</button>
-                        <button class="quick-add-btn class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition duration-200" data-amount="100">₹100</button>
-                    </div>
-                </div>
-
-                <!-- Contribution Form -->
-                <div>
-                    <p class="text-sm text-gray-400 mb-3">Manual Contribution</p>
-                    <form id="contributionForm">
-                        <div class="flex mb-3">
-                            <div class="flex items-center mr-4">
-                                <input id="cashRadio" type="radio" name="paymentMethod" value="cash" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green" checked>
-                                <label for="cashRadio" class="ml-2 text-sm font-medium text-gray-300">Cash</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input id="upiRadio" type="radio" name="paymentMethod" value="upi" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green">
-                                <label for="upiRadio" class="ml-2 text-sm font-medium text-gray-300">UPI</label>
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <input type="number" id="contributionAmount" class="flex-1 bg-gray-700 border border-gray-600 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="Amount">
-                            <button id="addContributionBtn" type="submit" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">
-                                Add
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            <div class="h-4 bg-gray-700 rounded-full overflow-hidden">
+              <div
+                id="progressBar"
+                class="h-full bg-growth-green rounded-full transition-all duration-500"
+                style="width: 0%"
+              ></div>
             </div>
+            <p class="text-center text-sm font-medium mt-2 text-gray-300">
+              <span id="progressPercentage">0%</span> Complete
+            </p>
+          </div>
 
-            <!-- Contributions History -->
-            <div id="historyView" class="bg-gray-800 rounded-xl p-6 shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-growth-green">Recent Drops</h2>
-                <div id="contributionsList" class="space-y-3">
-                    <p class="text-gray-400 text-center py-4">No contributions yet</p>
-                </div>
+          <div class="bg-gray-700 rounded-lg p-4">
+            <div class="flex items-center">
+              <div class="bg-growth-green rounded-full p-2 mr-3">
+                <i data-feather="calendar" class="w-5 h-5 text-white"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Weekly Target (Remaining)</p>
+                <p class="font-semibold text-xl">₹<span id="weeklyTarget">0</span></p>
+              </div>
             </div>
-        </main>
-    </div>
+          </div>
+        </div>
 
-    <script src="script.js"></script>
-    <script>
-        feather.replace();
-    </script>
+        <!-- Spending Leak Analysis -->
+        <div class="p-4 bg-gray-700 rounded-xl border border-red-500/50">
+          <h3 class="text-lg font-semibold mb-3 text-red-500">Spending Leak Analysis 🚨</h3>
+          <p id="analysisMessage" class="text-base text-gray-300 mb-4 italic">
+            Click below for AI analysis on your recent saving habits.
+          </p>
+          <button
+            id="analyzeHabitsBtn"
+            class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg transition duration-200 flex items-center justify-center"
+          >
+            <i data-feather="bar-chart-2" class="w-4 h-4 mr-2"></i> Find My Saving Trends
+          </button>
+          <div id="analysisLoading" class="text-center mt-2 hidden text-gray-400">
+            Analyzing data...
+          </div>
+        </div>
 
-    <!-- PWA FIX: Service Worker Registration Code Added Here -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(registration => {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                }).catch(error => {
-                    console.error('Service Worker registration failed:', error);
-                });
-            });
-        }
-    </script>
+        <!-- UPI vs Cash -->
+        <div class="p-4 bg-gray-700 rounded-lg">
+          <h3 class="text-sm font-medium text-gray-300 mb-2">UPI Tax Exposure Insight</h3>
+          <p id="upiExposure" class="text-base text-gray-400">
+            Log some contributions to see if Cash or UPI helps you save more!
+          </p>
+        </div>
+
+        <!-- Quick Add Buttons -->
+        <div class="pt-2">
+          <p class="text-sm text-gray-400 mb-3">Quick Add (Zero-Tap Log)</p>
+          <div class="grid grid-cols-3 grid-rows-2 gap-3">
+            <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg" data-amount="20">₹20</button>
+            <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg" data-amount="50">₹50</button>
+            <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg" data-amount="100">₹100</button>
+            <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg" data-amount="200">₹200</button>
+            <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg" data-amount="500">₹500</button>
+            <button class="quick-add-btn bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg" data-amount="1000">₹1000</button>
+          </div>
+        </div>
+
+        <!-- Manual Contribution -->
+        <form id="contributionForm" class="pt-4">
+          <p class="text-sm text-gray-400 mb-3">Manual Contribution</p>
+          <div class="flex mb-3">
+            <div class="flex items-center mr-4">
+              <input id="cashRadio" type="radio" name="paymentMethod" value="cash" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green" checked>
+              <label for="cashRadio" class="ml-2 text-sm text-gray-300">Cash</label>
+            </div>
+            <div class="flex items-center">
+              <input id="upiRadio" type="radio" name="paymentMethod" value="upi" class="w-4 h-4 text-growth-green bg-gray-700 border-gray-600 focus:ring-2 focus:ring-growth-green">
+              <label for="upiRadio" class="ml-2 text-sm text-gray-300">UPI</label>
+            </div>
+          </div>
+          <div class="flex">
+            <input type="number" id="contributionAmount" class="flex-1 bg-gray-700 border border-gray-600 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="Amount">
+            <button id="addContributionBtn" type="submit" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">
+              Add
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- History -->
+      <div id="historyView" class="bg-gray-800 rounded-xl p-6 shadow-lg">
+        <h2 class="text-xl font-semibold mb-4 text-growth-green">Recent Drops</h2>
+        <div id="contributionsList" class="space-y-3">
+          <p class="text-gray-400 text-center py-4">No contributions yet</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script>feather.replace();</script>
+  <noscript>Please enable JavaScript to use SaveUp.</noscript>
 </body>
 </html>
