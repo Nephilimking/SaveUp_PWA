@@ -44,64 +44,74 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<body class="bg-gray-900 text-gray-100 min-h-screen">
-  <div class="container mx-auto px-4 py-8 max-w-md">
+<body class="bg-gray-900 text-gray-100 min-h-screen relative overflow-x-hidden">
+  <!-- ===== Side Navigation ===== -->
+  <aside id="sideNav" class="fixed top-0 left-0 h-full w-64 bg-gray-800 border-r border-gray-700 transform -translate-x-full transition-transform duration-300 z-40">
+    <div class="p-6 border-b border-gray-700 flex items-center justify-between">
+      <h2 class="text-2xl font-bold text-growth-green flex items-center"><i data-feather="pie-chart" class="w-6 h-6 mr-2"></i> SaveUp</h2>
+      <button id="closeNav" class="text-gray-400 hover:text-white"><i data-feather="x"></i></button>
+    </div>
+
+    <nav class="p-4 space-y-3">
+      <button class="w-full flex items-center text-gray-300 hover:text-growth-green py-2" onclick="showGoalView()">
+        <i data-feather="target" class="w-5 h-5 mr-3"></i> Goal
+      </button>
+      <button class="w-full flex items-center text-gray-300 hover:text-growth-green py-2" onclick="showDashboard()">
+        <i data-feather="bar-chart-2" class="w-5 h-5 mr-3"></i> Dashboard
+      </button>
+      <button class="w-full flex items-center text-gray-300 hover:text-growth-green py-2" onclick="document.getElementById('historyView').scrollIntoView({behavior:'smooth'})">
+        <i data-feather="clock" class="w-5 h-5 mr-3"></i> History
+      </button>
+      <button id="logoutBtn" class="w-full flex items-center text-gray-300 hover:text-red-500 py-2 mt-8">
+        <i data-feather="log-out" class="w-5 h-5 mr-3"></i> Logout
+      </button>
+    </nav>
+  </aside>
+
+  <!-- ===== Overlay ===== -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-30"></div>
+
+  <!-- ===== Page Content ===== -->
+  <div class="container mx-auto px-4 py-8 max-w-md relative">
     <!-- Header -->
     <header class="mb-8 flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-growth-green flex items-center">
-        <span class="mr-2 text-4xl leading-none">₹</span> SaveUp
-      </h1>
-      <button id="logoutBtn" class="text-gray-400 hover:text-red-500 transition duration-200">
+      <div class="flex items-center">
+        <button id="openNav" class="mr-4 text-gray-400 hover:text-growth-green transition">
+          <i data-feather="menu" class="w-6 h-6"></i>
+        </button>
+        <h1 class="text-3xl font-bold text-growth-green flex items-center">
+          <span class="mr-2 text-4xl leading-none">₹</span> SaveUp
+        </h1>
+      </div>
+      <button id="logoutBtnHeader" class="text-gray-400 hover:text-red-500 transition duration-200">
         <i data-feather="log-out" class="w-6 h-6"></i>
       </button>
     </header>
 
-    <!-- Main -->
+    <!-- ===== Main Content ===== -->
     <main>
       <!-- Goal View -->
       <div id="goalView" class="bg-gray-800 rounded-xl p-6 mb-6 shadow-lg">
         <h2 class="text-xl font-semibold mb-4 text-growth-green">Set Your Goal</h2>
         <form id="savingsForm" class="space-y-4">
           <div>
-            <label for="targetAmount" class="block text-sm font-medium text-gray-300 mb-1">
-              Target Amount (₹)
-            </label>
-            <input
-              type="number"
-              id="targetAmount"
-              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green"
-              placeholder="5000"
-            />
+            <label for="targetAmount" class="block text-sm font-medium text-gray-300 mb-1">Target Amount (₹)</label>
+            <input type="number" id="targetAmount" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="5000" />
           </div>
           <div>
-            <label for="deadline" class="block text-sm font-medium text-gray-300 mb-1">
-              Deadline
-            </label>
-            <input
-              type="date"
-              id="deadline"
-              class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green"
-            />
+            <label for="deadline" class="block text-sm font-medium text-gray-300 mb-1">Deadline</label>
+            <input type="date" id="deadline" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" />
           </div>
-          <button
-            id="setGoalBtn"
-            type="submit"
-            class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200"
-          >
-            Set Savings Goal
-          </button>
+          <button id="setGoalBtn" type="submit" class="w-full bg-growth-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200">Set Savings Goal</button>
         </form>
       </div>
 
       <!-- Dashboard -->
       <div id="dashboardView" class="hidden bg-gray-800 rounded-xl p-6 mb-6 shadow-lg space-y-6">
-        <!-- Progress -->
         <div class="bg-gray-800 rounded-xl p-6 shadow-lg -m-6 mb-0">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-semibold text-growth-green">Savings Progress</h2>
-            <button id="editGoalBtn" class="text-gray-400 hover:text-growth-green">
-              <i data-feather="edit-2" class="w-5 h-5"></i>
-            </button>
+            <button id="editGoalBtn" class="text-gray-400 hover:text-growth-green"><i data-feather="edit-2" class="w-5 h-5"></i></button>
           </div>
 
           <div class="mb-6">
@@ -110,22 +120,14 @@
               <span class="text-sm text-gray-400">Goal: ₹<span id="goalAmount">0</span></span>
             </div>
             <div class="h-4 bg-gray-700 rounded-full overflow-hidden">
-              <div
-                id="progressBar"
-                class="h-full bg-growth-green rounded-full transition-all duration-500"
-                style="width: 0%"
-              ></div>
+              <div id="progressBar" class="h-full bg-growth-green rounded-full transition-all duration-500" style="width: 0%"></div>
             </div>
-            <p class="text-center text-sm font-medium mt-2 text-gray-300">
-              <span id="progressPercentage">0%</span> Complete
-            </p>
+            <p class="text-center text-sm font-medium mt-2 text-gray-300"><span id="progressPercentage">0%</span> Complete</p>
           </div>
 
           <div class="bg-gray-700 rounded-lg p-4">
             <div class="flex items-center">
-              <div class="bg-growth-green rounded-full p-2 mr-3">
-                <i data-feather="calendar" class="w-5 h-5 text-white"></i>
-              </div>
+              <div class="bg-growth-green rounded-full p-2 mr-3"><i data-feather="calendar" class="w-5 h-5 text-white"></i></div>
               <div>
                 <p class="text-sm text-gray-400">Weekly Target (Remaining)</p>
                 <p class="font-semibold text-xl">₹<span id="weeklyTarget">0</span></p>
@@ -134,32 +136,22 @@
           </div>
         </div>
 
-        <!-- Spending Leak Analysis -->
         <div class="p-4 bg-gray-700 rounded-xl border border-red-500/50">
           <h3 class="text-lg font-semibold mb-3 text-red-500">Spending Leak Analysis 🚨</h3>
           <p id="analysisMessage" class="text-base text-gray-300 mb-4 italic">
             Click below for AI analysis on your recent saving habits.
           </p>
-          <button
-            id="analyzeHabitsBtn"
-            class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg transition duration-200 flex items-center justify-center"
-          >
+          <button id="analyzeHabitsBtn" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg transition duration-200 flex items-center justify-center">
             <i data-feather="bar-chart-2" class="w-4 h-4 mr-2"></i> Find My Saving Trends
           </button>
-          <div id="analysisLoading" class="text-center mt-2 hidden text-gray-400">
-            Analyzing data...
-          </div>
+          <div id="analysisLoading" class="text-center mt-2 hidden text-gray-400">Analyzing data...</div>
         </div>
 
-        <!-- UPI vs Cash -->
         <div class="p-4 bg-gray-700 rounded-lg">
           <h3 class="text-sm font-medium text-gray-300 mb-2">UPI Tax Exposure Insight</h3>
-          <p id="upiExposure" class="text-base text-gray-400">
-            Log some contributions to see if Cash or UPI helps you save more!
-          </p>
+          <p id="upiExposure" class="text-base text-gray-400">Log some contributions to see if Cash or UPI helps you save more!</p>
         </div>
 
-        <!-- Quick Add Buttons -->
         <div class="pt-2">
           <p class="text-sm text-gray-400 mb-3">Quick Add (Zero-Tap Log)</p>
           <div class="grid grid-cols-3 grid-rows-2 gap-3">
@@ -172,7 +164,6 @@
           </div>
         </div>
 
-        <!-- Manual Contribution -->
         <form id="contributionForm" class="pt-4">
           <p class="text-sm text-gray-400 mb-3">Manual Contribution</p>
           <div class="flex mb-3">
@@ -187,9 +178,7 @@
           </div>
           <div class="flex">
             <input type="number" id="contributionAmount" class="flex-1 bg-gray-700 border border-gray-600 rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-growth-green focus:border-growth-green" placeholder="Amount">
-            <button id="addContributionBtn" type="submit" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">
-              Add
-            </button>
+            <button id="addContributionBtn" type="submit" class="bg-growth-green hover:bg-green-700 text-white font-bold px-4 py-2 rounded-r-lg transition duration-200">Add</button>
           </div>
         </form>
       </div>
@@ -204,8 +193,32 @@
     </main>
   </div>
 
+  <!-- ===== Scripts ===== -->
   <script src="script.js"></script>
-  <script>feather.replace();</script>
+  <script>
+    feather.replace();
+
+    // side nav toggles
+    const openNav = document.getElementById("openNav");
+    const closeNav = document.getElementById("closeNav");
+    const sideNav = document.getElementById("sideNav");
+    const overlay = document.getElementById("overlay");
+
+    openNav.addEventListener("click", () => {
+      sideNav.classList.remove("-translate-x-full");
+      overlay.classList.remove("hidden");
+    });
+
+    closeNav.addEventListener("click", () => {
+      sideNav.classList.add("-translate-x-full");
+      overlay.classList.add("hidden");
+    });
+
+    overlay.addEventListener("click", () => {
+      sideNav.classList.add("-translate-x-full");
+      overlay.classList.add("hidden");
+    });
+  </script>
   <noscript>Please enable JavaScript to use SaveUp.</noscript>
 </body>
 </html>
