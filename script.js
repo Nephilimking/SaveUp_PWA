@@ -222,9 +222,7 @@ function calculateUpiExposure() {
 }
 
 // === Gemini AI Config ===
-const API_MODEL = "gemini-1.5-flash";
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=`;
-const apiKey = "AIzaSyBti2kHMpLW1gof-a4jYd58O-mVVe9wtyw"; // ⚠️ Replace before testing
+const API_URL = "/api/analyze"; // ✅ Call your backend route instead of Gemini directly
 
 async function fetchWithRetry(payload, retries = 3, delay = 1200) {
   for (let i = 0; i < retries; i++) {
