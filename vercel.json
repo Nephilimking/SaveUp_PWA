@@ -6,7 +6,8 @@
     { "src": "*.css", "use": "@vercel/static" },
     { "src": "*.js", "use": "@vercel/static" },
     { "src": "manifest.json", "use": "@vercel/static" },
-    { "src": "sw.js", "use": "@vercel/static" }
+    { "src": "sw.js", "use": "@vercel/static" },
+    { "src": "icons/**", "use": "@vercel/static" }
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
@@ -17,14 +18,21 @@
       "source": "/manifest.json",
       "headers": [
         { "key": "Content-Type", "value": "application/manifest+json" },
-        { "key": "Cache-Control", "value": "public, max-age=3600" }
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
       ]
     },
     {
       "source": "/sw.js",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, max-age=0, must-revalidate" },
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
         { "key": "Service-Worker-Allowed", "value": "/" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
       ]
     }
   ]
