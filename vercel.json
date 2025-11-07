@@ -8,9 +8,9 @@
     { "src": "manifest.json", "use": "@vercel/static" },
     { "src": "sw.js", "use": "@vercel/static" }
   ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
